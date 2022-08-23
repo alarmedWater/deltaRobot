@@ -1,25 +1,25 @@
 #include <AccelStepper.h>
 
 //Strang1
-#define dirPin1 3
 #define stepPin1 2
+#define dirPin1 3
 #define endstop1 8
 
 //Strang2
-#define dirPin2 5
 #define stepPin2 4
+#define dirPin2 5
 #define endstop2 9
 
-//Strang 
-#define dirPin3 7
+//Strang3 
 #define stepPin3 6
+#define dirPin3 7
 #define endstop3 10
-#define motorInterfaceType 1
 
-AccelStepper stepper1 = AccelStepper(motorInterfaceType, stepPin1, dirPin1);
-AccelStepper stepper2 = AccelStepper(motorInterfaceType, stepPin2, dirPin2);
-AccelStepper stepper3 = AccelStepper(motorInterfaceType, stepPin3, dirPin3);
 
+// Define steppers 1-3 and the pins they will use
+AccelStepper stepper1(AccelStepper::DRIVER, 2, 3); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
+AccelStepper stepper2(AccelStepper::DRIVER, 4, 5); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
+AccelStepper stepper3(AccelStepper::DRIVER, 6, 7); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 
  /*
 //Metode um Schalter zu bouncen (Strörung glätten)
@@ -59,6 +59,8 @@ int readBSchalter(int pin) {
 
 */
 
+
+
 boolean readBSchalter(int pin)
 {
  boolean state; 
@@ -87,7 +89,6 @@ boolean readBSchalter(int pin)
 }
 
 
- 
   
 
 
@@ -120,19 +121,42 @@ void setup() {
 
   
   Serial.begin(9600);
+
+  
   //PinModus für Endschalter
-  pinMode(endstop1, INPUT_PULLUP); //Strang1;
+
+  //INPUT-PULLUP:  am Eingangs-Pin wird ein 50kΩ-Widerstand aktiviert der Eingang hat dann im nicht gedrückten Zustand die Eigenschaft TRUE (bzw. HIGH) und im betätigten Fall FALSE (bzw. LOW) 
+  pinMode(endstop1, INPUT_PULLUP); //Strang1;  
   pinMode(endstop2, INPUT_PULLUP); //Strang2;
   pinMode(endstop3, INPUT_PULLUP); //Strang3;
-  stepper1.setMaxSpeed(1000);
-  stepper2.setMaxSpeed(1000);
-  stepper3.setMaxSpeed(1000);
+
+  //PinMode für Motoren OUTPUT
+  pinMode(stepPin1,OUTPUT);
+  pinMode(dirPin1,OUTPUT);
+
+  pinMode(stepPin2,OUTPUT);
+  pinMode(dirPin2,OUTPUT);
+
+  pinMode(stepPin3,OUTPUT);
+  pinMode(dirPin3,OUTPUT);
+  
+  //Define Stepper to AccelStepper.h
+  stepper1.setMaxSpeed(10000000.0);
+  stepper1.setAcceleration(10000.0);
+
+  stepper2.setMaxSpeed(10000000.0);
+  stepper2.setAcceleration(10000.0);
+
+  stepper3.setMaxSpeed(10000000.0);
+  stepper3.setAcceleration(10000.0);
+
 
 
 }
 
 void loop() {
 
+Serial.println("TEST ENDSCHALTER: ");
 readBSchalter(8);
 readBSchalter(9);
 readBSchalter(10);
