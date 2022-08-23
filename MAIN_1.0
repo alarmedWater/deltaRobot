@@ -1,0 +1,160 @@
+#include <AccelStepper.h>
+
+//Strang1
+#define dirPin1 3
+#define stepPin1 2
+#define endstop1 8
+
+//Strang2
+#define dirPin2 5
+#define stepPin2 4
+#define endstop2 9
+
+//Strang 
+#define dirPin3 7
+#define stepPin3 6
+#define endstop3 10
+#define motorInterfaceType 1
+
+AccelStepper stepper1 = AccelStepper(motorInterfaceType, stepPin1, dirPin1);
+AccelStepper stepper2 = AccelStepper(motorInterfaceType, stepPin2, dirPin2);
+AccelStepper stepper3 = AccelStepper(motorInterfaceType, stepPin3, dirPin3);
+
+
+ /*
+//Metode um Schalter zu bouncen (Strörung glätten)
+int readBSchalter(int pin) {
+
+  long lastDebounceTime = 0;  // the last time the output pin was toggled
+  long debounceDelay = 10;    // the debounce time; increase if the output flickers
+  int State = -1;
+
+
+  // Keep in mind the pull-up means the pushbutton's logic is inverted. It goes
+  // HIGH when it's open, and LOW when it's pressed. Turn on pin 13 when the
+  // button's pressed, and off when it's not:
+
+
+  //read the pushbutton value into a variable
+  int sensorVal = digitalRead(pin);
+
+  Serial.print(pin);
+  Serial.println(sensorVal);
+  
+
+  //filter out any noise by setting a time buffer
+  if ( (millis() - lastDebounceTime) > debounceDelay) {
+
+    //if the button has been pressed, lets toggle the LED from "off to on" or "on to off"
+    if ( (sensorVal == LOW) ) {
+      lastDebounceTime = millis(); //set the current time
+    }
+    // else if ( (sensorVal == LOW)  && (State > 0))  {
+
+    // lastDebounceTime = millis(); //set the current time
+    //}
+
+   
+ }
+
+*/
+
+boolean readBSchalter(int pin)
+{
+ boolean state; 
+ boolean previousState;
+ const int debounceDelay = 60;
+
+ previousState = digitalRead(pin);
+
+ for(int counter=0; counter<debounceDelay; counter++)
+ {
+   delay(1);
+   state = digitalRead(pin);
+   if(state != previousState)
+   {
+     counter = 0;
+     previousState = state;
+   }
+ }
+ Serial.print("Wert aus readBSchalter_Methode: ");
+ Serial.print("\t");
+ Serial.print(pin);
+ Serial.print("\t");
+ Serial.println(state);
+
+ return state;
+}
+
+
+ 
+  
+
+
+
+//Autohome Methode 
+void autoHome()
+{
+  if(readBSchalter(8) != 1)
+  {
+    stepper1.setSpeed(-400);
+  // Step the motor with a constant speed as set by setSpeed():
+  stepper1.runSpeed();
+  }
+  if(readBSchalter(9) != 1)
+  {
+    stepper2.setSpeed(-400);
+  // Step the motor with a constant speed as set by setSpeed():
+  stepper2.runSpeed();
+  }
+  if(readBSchalter(10) != 1)
+  {
+    stepper3.setSpeed(-400);
+  // Step the motor with a constant speed as set by setSpeed():
+  stepper3.runSpeed();
+  }
+}
+
+
+void setup() {
+
+  
+  Serial.begin(9600);
+  //PinModus für Endschalter
+  pinMode(endstop1, INPUT_PULLUP); //Strang1;
+  pinMode(endstop2, INPUT_PULLUP); //Strang2;
+  pinMode(endstop3, INPUT_PULLUP); //Strang3;
+  stepper1.setMaxSpeed(1000);
+  stepper2.setMaxSpeed(1000);
+  stepper3.setMaxSpeed(1000);
+
+
+}
+
+void loop() {
+
+readBSchalter(8);
+readBSchalter(9);
+readBSchalter(10);
+  
+ /* 
+  autoHome();
+
+ // Set the current position to 0:
+  stepper1.setCurrentPosition(0);
+  stepper2.setCurrentPosition(0);
+  stepper3.setCurrentPosition(0);
+  
+   // Run the motor forward at 200 steps/second until the motor reaches 400 steps (2 revolutions):
+  while(stepper1.currentPosition() != 50 && stepper2.currentPosition() != 50 && stepper3.currentPosition() != 50 )
+  {
+    stepper1.setSpeed(450);
+    stepper1.runSpeed();
+    stepper2.setSpeed(450);
+    stepper2.runSpeed();
+    stepper3.setSpeed(450);
+    stepper3.runSpeed();
+  }
+
+  delay(1000);*/
+}
